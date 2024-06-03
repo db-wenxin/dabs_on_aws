@@ -1,0 +1,88 @@
+bundle:
+  name: DABsCICDDemo
+
+# User can store YAML definition files for various components in different folders to better orchestrate the code.
+include:
+  - resources/*.yml
+# 'run_as' must be set for all jobs when using 'mode: production'
+run_as: 
+  user_name: example_user@databricks.com
+
+variables:
+  email_notifications_target:
+    description: The email to receive the job notifications.
+    default: example_user@databricks.com
+  job_node_type:
+    description: The compute type for job cluster
+    default: r6i.large
+  dlt_node_type:
+    description: The compute type for dlt cluster
+    default: r6i.large
+  spark_version:
+    description: The Databricks cluster runtime version
+    default: 13.3.x-scala2.12
+
+targets:
+  ############################################################
+  ## This target can be used for local test and development ##
+  ############################################################
+  development:
+    mode: development
+    workspace:
+      # The host name is configured by local databricks cli
+      root_path: ~/dev_local/${bundle.name}/${bundle.target}
+    resources:
+      jobs:
+        qa-test:
+          name: nutter-test
+          tasks:
+            - task_key: nutter-test
+              notebook_task:
+                notebook_path: ./src/nutter_test.ipynb 
+              job_cluster_key: nutter_test_cluster
+          job_clusters:
+            - job_cluster_key: nutter_test_cluster
+              new_cluster:
+                spark_version: ${var.spark_version}
+                node_type_id: ${var.job_node_type}
+                autoscale:
+                    min_workers: 1
+                    max_workers: 1
+                aws_attributes:
+                  ebs_volume_count: 1
+                  ebs_volume_size: 100
+                  ebs_volume_type: GENERAL_PURPOSE_SSD
+
+  qa:
+    workspace:
+      # The host url will be updated by the cicd runner using Linux 'sed' command.
+      host: QA
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
+    # create a QA only task for nutter test 
+    resources:
+      jobs:
+        nutter-test:
+          name: nutter-test
+          tasks:
+            - task_key: nutter-test
+              notebook_task:
+                notebook_path: ./src/nutter_test.ipynb 
+              job_cluster_key: nutter_test_cluster
+          job_clusters:
+            - job_cluster_key: nutter_test_cluster
+              new_cluster:
+                spark_version: ${var.spark_version}
+                node_type_id: ${var.job_node_type}
+                autoscale:
+                  min_workers: 1
+                  max_workers: 1
+                aws_attributes:
+                  ebs_volume_count: 1
+                  ebs_volume_size: 100
+                  ebs_volume_type: GENERAL_PURPOSE_SSD
+  prod:
+    mode: production
+    workspace:
+      # The host url will be updated by the cicd runner using Linux 'sed' command.
+      host: PROD
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
