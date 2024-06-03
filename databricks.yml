@@ -6,12 +6,12 @@ include:
   - resources/*.yml
 # 'run_as' must be set for all jobs when using 'mode: production'
 run_as: 
-  user_name: example_user@databricks.com
+  user_name: sample_user@example_databricks.com
 
 variables:
   email_notifications_target:
     description: The email to receive the job notifications.
-    default: example_user@databricks.com
+    default: sample_user@example_databricks.com
   job_node_type:
     description: The compute type for job cluster
     default: r6i.large
