@@ -16,6 +16,12 @@ This solution provides an AWS CloudFormation template to provision the CI/CD pip
     - [Databricks Asset Bundles Documentation](https://docs.databricks.com/en/dev-tools/bundles/index.html)
     - [Databricks CLI Installation Guide](https://docs.databricks.com/en/dev-tools/cli/install.html)
 
+
+## Workspace Authentication
+Databricks [personal access tokens (PATs)](https://docs.databricks.com/en/dev-tools/auth/pat.html) are one of the most well-supported types of credentials for resources and operations at the Databricks workspace level. In this solution, we use PATs to allow CI/CD pipeline execution jobs to authenticate to the target workspaces. This sample solution does NOT load the PATs from the CloudFormation [template parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html). Instead, please use the AWS console, AWS API, or SDK to upload the PAT token value to the AWS Secret Manager.
+
+We also recommend creating the Databricks PATs with an expiration date. Using access tokens set to never expire is highly not recommended, because this significantly increases the risk of token misuse or compromise.
+
 ## High-level Architecture Diagram
 
 ![High-level Architecture Diagram](./images/high_level_architecture.png)

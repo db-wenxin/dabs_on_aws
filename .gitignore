@@ -1,0 +1,6 @@
+.venv
+.databricks
+.vscode
+./src/bundlesDevOpsDemo.egg-info
+./src/bundlesDevOpsDemo/__pycache__
+.DS_Store
