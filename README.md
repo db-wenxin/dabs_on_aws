@@ -1,10 +1,12 @@
 # DABs CI/CD Pipeline Example on AWS
 
-This example demonstrates how to set up a CI/CD pipeline for deploying Databricks jobs and pipelines using Databricks Asset Bundles (DABs) on the AWS platform.
+This example demonstrates how to set up a CI/CD pipeline for deploying Databricks resources such as jobs and pipelines using **[Databricks Asset Bundles (DABs)](https://docs.databricks.com/en/dev-tools/bundles/index.html)** on the AWS platform.
 
 ## Solution Introduction
 
-This solution provides an AWS CloudFormation template to provision the CI/CD pipeline resources on AWS, including a CodeCommit repository, CodePipeline, AWS Secret Manager and IAM resources. The CI/CD pipeline retrieves the Databricks PAT token from the registered AWS Secrets Manager to authenticate to the target workspaces. It then deploys the sample Databricks job and pipeline using the Databricks bundle template and Python sample code in this repository.
+This solution provides an AWS CloudFormation template to provision the CI/CD pipeline resources on AWS, including a CodeCommit repository, CodePipeline, AWS Secrets Manager, and IAM resources. The CI/CD pipeline retrieves the Databricks PAT token from the registered AWS Secrets Manager to authenticate to the target workspaces. It then deploys the sample Databricks job and pipeline using the Databricks bundle template and Python sample code in this repository.
+
+The Python notebooks and pipelines used in this sample solution are **basic examples** that can be directly obtained using the databricks bundle init command. This solution aims to demonstrate how to deploy and integrate Databricks Asset Bundles within an AWS CI/CD pipeline. For more complex ML solutions, please refer to other Databricks ML references, such as the Databricks MLOps stack.
 
 ## Prerequisites
 
@@ -28,9 +30,9 @@ We also recommend creating the Databricks PATs with an expiration date. Using ac
 
 ## High-level Workflow
 
-1. Users can use DABs `databricks bundle` commands to deploy the code in a dev workspace, and use this workspace to debug the notebook code and the DABs YAML template code.
+1. Users can use DABs `databricks bundle` commands to deploy the code in a dev workspace, and use this workspace to develop the notebook code and the DABs YAML template code.
      - ( *Optional* ) Users can also directly associate the dev workspace with the remote repository using the [Databricks Git integration](https://docs.databricks.com/en/repos/index.html) to push code or create pull requests.
-2. After debugging, users can push the local DABs folder/code to the AWS CodeCommit remote repository using Git, and then merge the code into the target branch (e.g., "main") via a Pull Request in AWS CodeCommit.
+2. After development and debugging, users can push the local DABs folder/code to the AWS CodeCommit remote repository using Git, and then merge the code into the target branch (e.g., "main") via a Pull Request in AWS CodeCommit.
 3. Once the PR is merged into the target branch, it triggers the AWS CodePipeline.
 4. In the QA build stage of the AWS CodePipeline, the pipeline retrieves the QA workspace PAT token from AWS Secrets Manager for authentication and deploys the resources defined in the DABs template to the QA workspace. In this sample solution, the QA stage runner also runs nutter tests to perform a sample test on one of the notebook functions.
 5. If the QA stage completes successfully, it moves to the manual review stage. This stage requires manual approval from a reviewer with the appropriate permissions to promote the code to production.
@@ -66,12 +68,21 @@ We also recommend creating the Databricks PATs with an expiration date. Using ac
 
 6. **Production Deployment**:
     - After the final "Production" stage is completed, you can view the runner execution output and logs by clicking "View details."
+    - ![Prod runner log](./images/prod_runner_log.png)
 
 7. **Review Databricks Resources**:
-    - You can review the deployed resources by logging into the Dev and QA workspaces in Databricks.
+    - You can review the deployed resources by logging into the QA and Prod workspaces in Databricks.
     - ![Review resources in workspace](./images/workspace_jobs_details.png)
+    - ![Prod workspace output](./images/prod_workspace_output.png)
 
 ## Clean Up
-
 1. Delete the resources created in the Databricks workspace, either through the console or using the Databricks CLI.
-2. Delete the CloudFormation stack from your AWS account.
+2. Delete the CloudFormation stack and its resources from your AWS account.
+
+## Reference
+
+1. [What are Databricks Asset Bundles?](https://docs.databricks.com/en/dev-tools/bundles/index.html)
+2. [Databricks Asset Bundles for MLOps Stacks](https://docs.databricks.com/en/dev-tools/bundles/mlops-stacks.html)
+3. [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+4. [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)
+5. [AWS CodePipeline with AWS CodeBuild to test code and run builds](https://docs.aws.amazon.com/codebuild/latest/userguide/how-to-create-pipeline.html)
